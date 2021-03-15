@@ -17,6 +17,20 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', 'AuthController@register');
 Route::post('/login', 'AuthController@login');
 Route::post('/logout', 'AuthController@logout');
+Route::post('/forgot', 'ForgotPasswordController@sendPasswordResetEmail');
+Route::post('/reset', 'ForgotPasswordController@reset');
+
+
+
+
+
+
+
+
+
+
+
+
 
 Route::group(['middleware' => ['jwt.verify']], function() {
 

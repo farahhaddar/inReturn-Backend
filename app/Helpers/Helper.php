@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Storage;
 
+// File Handle  Functions
+
 function storeImage($file)
 {
     $path = Storage::disk('public')->put('images', $file);
@@ -30,3 +32,23 @@ function destroyImage($old_path)
         Storage::disk('public')->delete('/' . $old_path);
     }
 }
+
+
+// Response Handle Functions
+
+ function success($data)
+    {
+        if ($data != null) {
+            $response = ['status' => 200, 'success' => true,'data'=> $data];
+        } else {
+            $response = ['status' => 200, 'success' => true];
+        }
+        return response()->json($response);
+    }
+
+    function error($status, $message, $reason = null)
+    {
+        $error = ['status' => $status, 'message' => $message, 'reason' => $reason];
+        $response = ['success' => false, 'error' => $error];
+        return response()->json($response,$status);
+    }

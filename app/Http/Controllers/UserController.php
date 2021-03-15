@@ -1,25 +1,26 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\User;
-
 use Illuminate\Http\Request;
-
 
 class UserController extends Controller
 {
 
-        /**
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $users=User::all();
-
-       return response()->json(['status'=> 200, 'users' =>$users ]);
-
+        $users = User::all();
+        if ($users) {
+            return success($users);
+        } else {
+            return error(406, 'Failed to Get Users');
+        }
 
     }
 
@@ -31,21 +32,22 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-      
-            $data = $request->all();
-            $image = $request->file('image');
-            $path =storeImage($image);
-             if (!$path)
-             {
-            //  return Response::error(400, "Couldn't upload image");
-             }
-                $user = new User();
-                $user->fill($data);
-                $user->image = $path;
-                $user->save();
-                return response()->json(['status' => 200, 'user' => $user]);
-        
-        
+
+        $data = $request->all();
+        $image = $request->file('image');
+        $path = storeImage($image);
+        if (!$path) {
+            return error(400, "Couldn't upload image");
+        }
+        $user = new User();
+        $user->fill($data);
+        $user->image = $path;
+        if ($user->save()) {
+            return success($user);
+        } else {
+            return error(400, 'Could Not Store User');
+        }
+
     }
 
     /**
@@ -56,13 +58,30 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        return User::where('id', $id)->first();
+        $user = User::where('id', $id)->first();
+        if ($user) {
+            return success($user);
+        } else {
+            return error(406, 'Failed to Get User');
+        }
 
     }
 
+    /**
+     * count all users.
+     *
+     * @param  \App\User $user
+     * @return \Illuminate\Http\Response
+     */
+
     public function count()
     {
-        return User::count();
+        $users = User::count();
+        if ($users) {
+            return success($users);
+        } else {
+            return error(400, 'Could Not Count User');
+        }
 
     }
 
@@ -75,14 +94,14 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-            $data = $request->all();
-            $image = $request->file('image');
-            $oldData = User::findOrFail($id);
-            $old_path = $oldData->image;
-            $path =updateImage($image,$old_path);
-            if ($path){
+        $data = $request->all();
+        $image = $request->file('image');
+        $oldData = User::findOrFail($id);
+        $old_path = $oldData->image;
+        $path = updateImage($image, $old_path);
+        if ($path) {
             if (trim($request->password) === '') {
-                $user = $oldData ;
+                $user = $oldData;
                 $user->name = $data['name'];
                 $user->email = $data['email'];
                 $user->email = $data['phoneNb'];
@@ -90,18 +109,19 @@ class UserController extends Controller
                 $user->email = $data['extraInfo'];
             } else {
                 $password = $request->password;
-                $user = $oldData ;
+                $user = $oldData;
                 $user->update($data);
-                $user->password =$password;
+                $user->password = $password;
             }
             $user->image = $path;
-            $user->save();
+            if ($user->save()) {
+                return success($user);
+            } else {
+                return error(400, 'Could Not Update User');
+            }
 
-            return response()->json(['status' => 200, 'user' => $user]);
-
-            
-        }else{
-        return('fail');
+        } else {
+            return error(406,"Failed  To Upload the image");
         }
 
     }
@@ -116,10 +136,12 @@ class UserController extends Controller
         $user = User::find($id);
         $image = $user->image;
         destroyImage($image);
-        $user->delete();
-        return response()->json(['status' => 200, 'Message' => "Record has been deleted successfuly"]);
+       if( $user->delete()){
+        return success( "Your account has been deleted successfuly");
+       }else{
+           return error(406,'Can not delete user');
+       }
 
     }
-
 
 }

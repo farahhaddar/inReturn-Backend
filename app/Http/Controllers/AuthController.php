@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-// use App\Response\Response;
 use App\Models\User;
+use Hash;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
