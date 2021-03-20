@@ -6,14 +6,15 @@ use App\Models\User;
 use Hash;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
+use App\Http\Requests\UserAuthRequest;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
+    public function register(UserAuthRequest $request)
     {
-        // if ($request->validator->fails()) {
-        //     return Response::error(400, $request->validator->messages());
-        // }
+        if ($request->validator->fails()) {
+            return error(400, $request->validator->messages());
+        }
 
         $user = User::create([
             'name' => $request->name,
@@ -23,7 +24,7 @@ class AuthController extends Controller
             'image' => "images/defult.jpeg",
             'address' => $request->address,
             'extraInfo' => $request->extraInfo,
-            // 'city_id' => $request->city_id,
+            'city_id' => $request->city_id,
         ]);
 
         $token = auth('users')->login($user);

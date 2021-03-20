@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -20,7 +21,7 @@ class UserController extends Controller
         if ($users) {
             return success($users);
         } else {
-            return error(406, 'Failed to Get Users');
+            return error(400, 'Failed to Get Users');
         }
 
     }
@@ -31,8 +32,12 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
+
+        if ($request->validator->fails()) {
+            return error(400, $request->validator->messages());
+        }
 
         $data = $request->all();
         $image = $request->file('image');
@@ -63,7 +68,7 @@ class UserController extends Controller
         if ($user) {
             return success($user);
         } else {
-            return error(406, 'Failed to Get User');
+            return error(400, 'Failed to Get User');
         }
 
     }
@@ -93,8 +98,12 @@ class UserController extends Controller
      * @param  \App\User $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UserRequest $request, $id)
     {
+        if ($request->validator->fails()) {
+            return error(400, $request->validator->messages());
+        }
+
         $data = $request->all();
         $image = $request->file('image');
         $oldData = User::findOrFail($id);
@@ -122,7 +131,7 @@ class UserController extends Controller
             }
 
         } else {
-            return error(406,"Failed  To Upload the image");
+            return error(400, "Failed  To Upload the image");
         }
 
     }
@@ -137,11 +146,11 @@ class UserController extends Controller
         $user = User::find($id);
         $image = $user->image;
         destroyImage($image);
-       if( $user->delete()){
-        return success( "Your account has been deleted successfuly");
-       }else{
-           return error(406,'Can not delete user');
-       }
+        if ($user->delete()) {
+            return success("Your account has been deleted successfuly");
+        } else {
+            return error(400, 'Can not delete user');
+        }
 
     }
 

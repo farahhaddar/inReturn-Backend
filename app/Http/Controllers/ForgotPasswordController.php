@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ForgotPasswordRequest;
+use App\Http\Requests\ResetPassWordRequest;
 use App\Mail\ForgotMail;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Mail;
 
@@ -16,8 +17,13 @@ class ForgotPasswordController extends Controller
     // main function to send an email
     // $request have the email of the registered user
 
-    public function sendPasswordResetEmail(Request $request)
+    public function sendPasswordResetEmail(ForgotPasswordRequest $request)
     {
+
+        if ($request->validator->fails()) {
+            return error(400, $request->validator->messages());
+        }
+
         // If email does not exist
         $email = $request->email;
         if (User::where('email', $email)->doesntExist()) {
@@ -63,8 +69,12 @@ class ForgotPasswordController extends Controller
     // Reset Password Funtion
     // recive the email,token and new password from the frontend request
 
-    public function reset(Request $request)
+    public function reset(ResetPassWordRequest $request)
     {
+
+        if ($request->validator->fails()) {
+            return error(400, $request->validator->messages());
+        }
 
         $password = $request->password;
 
