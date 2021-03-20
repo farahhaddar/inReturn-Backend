@@ -20,18 +20,6 @@ Route::post('/logout', 'AuthController@logout');
 Route::post('/forgot', 'ForgotPasswordController@sendPasswordResetEmail');
 Route::post('/reset', 'ForgotPasswordController@reset');
 
-
-
-
-
-
-
-
-
-
-
-
-
 Route::group(['middleware' => ['jwt.verify']], function() {
 
    //******************************************//
@@ -44,6 +32,11 @@ Route::put('/user/{id}', 'UserController@update');
 Route::delete('/user/{id}', 'UserController@destroy');
 Route::get('/usersNb', 'UserController@count');
 
+
+//******************************************//
+//              city   ROUTES               //
+//******************************************//
+Route::get('/cities', 'CitiesController@index');
 
 
 

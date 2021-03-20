@@ -23,6 +23,7 @@ class User extends Authenticatable implements JWTSubject
         'password',
         'phoneNb',
         'image',
+        'city_id',
         'address',
         'extraInfo',
 
@@ -63,5 +64,10 @@ class User extends Authenticatable implements JWTSubject
         if ( !empty($password)  ){
             $this->attributes['password'] = bcrypt($password);
         }
+    }
+
+     public function city()
+    {
+        return $this->belongsTo(Cities::class, 'city_id', 'id');
     }
 }
