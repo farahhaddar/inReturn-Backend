@@ -6,11 +6,18 @@
     <title>Forgot password</title>
 </head>
 <body>
-pinCode: {{$data}};
+ Hello,
+<br><br>
+<div style={color:red}>
+ Your Pin Code is :
+</div>
+<div>
+Pin Code: {{$data}};
+</div>
  <br>
-    Follow the link to change your password:
+    <!-- Follow the link to change your password: -->
     
     <br>
-    <a href="http://localhost:8000/reset/{{$data}}">Follow Me ! </a>
+    <!-- <a href="http://localhost:8000/reset/{{$data}}">Follow Me ! </a> -->
 </body>
 </html>

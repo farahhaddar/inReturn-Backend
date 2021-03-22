@@ -29,6 +29,15 @@ class ForgotPasswordRequest extends FormRequest
         ];
     }
 
+     public function messages()
+    {
+        return [
+
+            'email.required' => "The email is required *",
+            
+        ];
+    }
+
 
     public $validator = null;
 

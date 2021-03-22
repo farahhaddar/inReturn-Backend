@@ -27,11 +27,22 @@ class ForgotPasswordController extends Controller
         // If email does not exist
         $email = $request->email;
         if (User::where('email', $email)->doesntExist()) {
-            return error(404, "Email Not Found");
+            return error(404, "Email Not Found. Please check the entered email again !");
         } else {
             // If email exists
+            try{
             $this->sendMail($email);
-            return success('Check your inbox, we have sent a link to reset email.');
+
+            return success('Check your inbox, we have sent you a link to reset your email.');
+
+            }catch (Exception $e){
+
+                 return error(401,'Faild to send email :( Check Your Connection ');
+
+            }
+         
+
+            
         }
     }
 

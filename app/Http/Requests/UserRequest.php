@@ -65,23 +65,23 @@ class UserRequest extends FormRequest
     {
         return [
 
-            'name.required' => 'Name is required *',
+            'name.required' => 'The Name is required *',
             'name.max' => 'Name is too long',
-            'image.required' => ' Image is required *',
+            'image.required' => 'The Image is required *',
             'image.max' => 'Image is too larage',
             'image.mimes' => 'Image type is unacceptable',
             'email.required' => "The email is required *",
-            'email.email' => "The email format must be eaxmple@mail.com",
+            'email.email' => "The email format must be example@mail.com",
             'email.unique' => 'This email is already taken ',
             'email.max' => 'The email is too long',
             'password.required' => 'The password is required *',
             'password.min' => 'the password should be at least 8 charachters',
-            'phoneNb.required' => "the phone number is required *",
-            'phoneNb.numeric' => "the phone number should be numric *",
+            'phoneNb.required' => "The phone number is required *",
+            'phoneNb.numeric' => "The phone number should be numric *",
             "address.required" => "The Adress feild is required *",
             'address.max' => 'The adress is too long',
             'exraInfo.max' => 'The adress extra Info is too long',
-            'city_id.required' => "The city is reuired",
+            'city_id.required' => "The city is reuired *",
 
         ];
     }

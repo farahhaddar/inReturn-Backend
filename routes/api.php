@@ -20,7 +20,7 @@ Route::post('/logout', 'AuthController@logout');
 Route::post('/forgot', 'ForgotPasswordController@sendPasswordResetEmail');
 Route::post('/reset', 'ForgotPasswordController@reset');
 
-Route::group(['middleware' => ['jwt.verify']], function() {
+// Route::group(['middleware' => ['jwt.verify']], function() {
 
    //******************************************//
   //              USER   ROUTES               //
@@ -42,4 +42,4 @@ Route::get('/cities', 'CitiesController@index');
 
 
 
-});
+// });

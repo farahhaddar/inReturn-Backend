@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UserAuthRequest extends FormRequest
+class UserRegisterRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -76,13 +76,13 @@ class UserAuthRequest extends FormRequest
             'email.unique'=> 'This email is already taken ',
             'email.max'=> 'The email is too long',
             'password.required'=> 'The password is required *',
-            'password.min' => 'the password should be at least 8 charachters',
-             'phoneNb.required'=> "the phone number is required *",
-             'phoneNb.numeric'=> "the phone number should be numric *",
+            'password.min' => 'The password should be at least 8 charachters',
+             'phoneNb.required'=> "The phone number is required *",
+             'phoneNb.numeric'=> "The phone number should be numric *",
              "address.required"=> "The Adress feild is required *",
              'address.max'=> 'The adress is too long',
              'exraInfo.max'=> 'The adress extra Info is too long',
-             'city_id.required'=>"The city is reuired"
+             'city_id.required'=>"The city is reuired *"
 
             
         ];

@@ -1,16 +1,14 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Http\Requests\UserRegisterRequest;
+use App\Http\Requests\UserLoginRequest;
 use App\Models\User;
-use Hash;
-use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
-use App\Http\Requests\UserAuthRequest;
 
 class AuthController extends Controller
 {
-    public function register(UserAuthRequest $request)
+    public function register(UserRegisterRequest $request)
     {
         if ($request->validator->fails()) {
             return error(400, $request->validator->messages());
@@ -32,8 +30,12 @@ class AuthController extends Controller
         return $this->respondWithToken($token);
     }
 
-    public function login()
+    public function login(UserLoginRequest $request)
     {
+        if ($request->validator->fails()) {
+            return error(400, $request->validator->messages());
+        }
+
         $credentials = request(['email', 'password']);
 
         if (!$token = auth('users')->attempt($credentials)) {
@@ -53,7 +55,7 @@ class AuthController extends Controller
     protected function respondWithToken($token)
     {
         return response()->json([
-            "status"=>200,
+            "status" => 200,
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
