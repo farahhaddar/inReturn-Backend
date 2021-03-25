@@ -21,7 +21,7 @@ class CitiesController extends Controller
         if ($city) {
             return success($city);
         } else {
-            return error(406, 'Failed to Get Cities');
+            return error(400, 'Failed to Get Cities');
         }
 
     }

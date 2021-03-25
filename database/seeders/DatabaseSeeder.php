@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
        Cities::class,
-    // PostSeeder::class,
+       Categories::class,
     // CommentSeeder::class,
 ]);
 

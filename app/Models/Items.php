@@ -9,49 +9,51 @@ class Items extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $dateFormat = 'd.m.Y';
-    
-     protected $fillable = [
+
+    protected $table = 'items'; 
+
+    protected $fillable = [
         'name',
         'details',
+        'date',
         'user_id',
-        'category_id'
-
+        'category_id',
 
     ];
 
-     public function users()
+    public function users()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-      public function category()
+    public function category()
     {
         return $this->belongsTo(Categories::class, 'category_id', 'id');
     }
 
-     public function categoryExchange()
+    public function categoryExchange()
     {
-       $this->belongsToMany(Categories::class, 'ItemExchangeCatgories', 'item_id', 'category_id');
+       return $this->belongsToMany(Categories::class,'item_exchange_catgories',"item_id","category_id");
+
+    }
+    public function itemWishList()
+    {
+       return $this->belongsToMany(User::class,'wish_lists',"item_id","user_id");
 
     }
 
-      public function itemWishList()
+    public function offers()
     {
-       $this->belongsToMany(User::class, 'WishList', 'item_id', 'user_id');
+      return   $this->belongsToMany(Offer::class,'offer_items','item_id','item_trade_with_id');
 
     }
 
-      public function offers()
-    {
-       $this->belongsToMany(Offer::class, 'WishList', 'item_id', 'item_trade_with_id');
-
-    }
-
-       public function images()
+    public function images()
     {
         return $this->hasMany(ItemImages::class, 'item_id', 'id');
     }
-
 
 }

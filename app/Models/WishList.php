@@ -9,6 +9,8 @@ class WishList extends Model
 {
     use HasFactory;
     
+     public $timestamps = false;
+     
      protected $fillable = [
         'item_id',
         'user_id',

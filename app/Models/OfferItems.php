@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class OfferItems extends Model
 {
     use HasFactory;
+     
+     public $timestamps = false;
+
       protected $fillable = [
         'item_id',
         'item_trade_with_id',

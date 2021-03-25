@@ -8,23 +8,23 @@ use Illuminate\Database\Eloquent\Model;
 class Categories extends Model
 {
     use HasFactory;
+    
+     public $timestamps = false;
 
-      protected $fillable = [
+    protected $fillable = [
         'name',
         'icon_name',
-    
+
     ];
 
-      public function items()
+    public function items()
     {
         return $this->hasMany(Items::class, 'category_id', 'id');
     }
 
-     public function itemCategoryExchange()
+    public function itemCategoryExchange()
     {
-       $this->belongsToMany(Items::class, 'ItemExchangeCatgories','category_id','item_id');
-
+        $this->belongsToMany(Items::class, 'category_id');
     }
-
 
 }

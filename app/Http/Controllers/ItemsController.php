@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ItemExchangeCatgories;
+use App\Models\ItemImages;
 use App\Models\Items;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ItemsController extends Controller
@@ -14,17 +17,13 @@ class ItemsController extends Controller
      */
     public function index()
     {
-        //
-    }
+        $item = Items::with('itemWishList', 'users', 'images', 'categoryExchange', 'category', 'offers')->get();
+        if ($item) {
+            return success($item);
+        } else {
+            return error(400, 'Failed to Get items');
+        }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -35,8 +34,61 @@ class ItemsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        $data = $request->all();
+        $item = new Items();
+        $item->fill($data);
+        $date = Carbon::now()->format('Y-m-d');
+        $item->date = $date;
+        if ($item->save()) {
+            $id = $item->id;
+            $images = $request->file('images');
+            if ($images) {
+                foreach ($images as $image) {
+                $path = storeImage($images);
+                if (!$path) {
+                    self::destroy($id);
+                    return error(400, "Couldn't upload image");
+                }
+
+                ItemImages::create([
+                    'image' => $path,
+                    'item_id' => $id,
+                ]);
+
+                }
+
+                $exchangeCats = $request->exchangeCats;
+                
+                if ($exchangeCats) {
+
+                    foreach ($exchangeCats as $cat) {
+
+                    ItemExchangeCatgories::create([
+                        'item_id' => $id,
+                        'category_id' => $exchangeCats,
+                    ]);
+                 }
+
+                    return self::show($id);
+
+                } else {
+                    self::destroy($id);
+                    return error(400, "Failed To Store Exchange Categories");
+
+                }
+
+            } else {
+                self::destroy($id);
+                return error(400, "Failed To Store Images");
+            }
+
+        } else {
+            return error(400, "Fail To Store Item");
+        }
+
     }
+
 
     /**
      * Display the specified resource.
@@ -44,21 +96,19 @@ class ItemsController extends Controller
      * @param  \App\Models\Items  $items
      * @return \Illuminate\Http\Response
      */
-    public function show(Items $items)
+
+    public function show($id)
     {
-        //
+        $item = Items::where('id', $id)->with('itemWishList', 'users', 'images', 'categoryExchange', 'category', 'offers')->first();
+        if ($item) {
+            return success($item);
+        } else {
+            return error(400, 'Failed to Get item');
+        }
+
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Items  $items
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Items $items)
-    {
-        //
-    }
+
 
     /**
      * Update the specified resource in storage.
@@ -78,8 +128,17 @@ class ItemsController extends Controller
      * @param  \App\Models\Items  $items
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Items $items)
+    public function destroy($id)
     {
-        //
+        $item = Items::where('id', $id)->delete();
+        dd($item);
+        $image = $item->image;
+        destroyImage($image);
+        if ($item) {
+            return success("Item has been deleted successfuly");
+        } else {
+            return error(400, 'Can not delete item');
+        }
+
     }
 }

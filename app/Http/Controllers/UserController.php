@@ -16,7 +16,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::with("city")->get();
+        $users = User::with("city","items","userWishList")->get();
 
         if ($users) {
             return success($users);
