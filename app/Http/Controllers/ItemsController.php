@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\ItemExchangeCatgories;
-use App\Models\ItemImages;
 use App\Models\Items;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -17,11 +16,51 @@ class ItemsController extends Controller
      */
     public function index()
     {
-        $item = Items::with('itemWishList', 'users', 'images', 'categoryExchange', 'category', 'offers')->get();
-        if ($item) {
-            return success($item);
+
+        $searchCat = $searchName = "";
+
+        if (isset($_GET['catId'])) {
+            $searchCat = $_GET['catId'];
+        }
+
+        if (isset($_GET['name'])) {
+            $searchName = $_GET['name'];
+        }
+
+        if ($searchCat == "") {
+
+            $item = Items::where('name', 'LIKE', '%' . $searchName . '%')
+                ->with('itemWishList', 'users', 'categoryExchange', 'category', 'offers')->get();
+
+            if ($item) {
+                return success($item);
+            } else {
+                return error(400, 'Failed to Get items');
+            }
+
         } else {
-            return error(400, 'Failed to Get items');
+            if ($searchCat == 5) {
+                $item = Items::
+                    where('name', 'LIKE', '%' . $searchName . '%')
+                    ->with('itemWishList', 'users', 'categoryExchange', 'category', 'offers')->get();
+                if ($item) {
+                    return success($item);
+                } else {
+                    return error(400, 'Failed to Get items');
+                }
+
+            }
+
+            $item = Items::
+                where('category_id', $searchCat)
+                ->where('name', 'LIKE', '%' . $searchName . '%')
+                ->with('itemWishList', 'users', 'categoryExchange', 'category', 'offers')->get();
+            if ($item) {
+                return success($item);
+            } else {
+                return error(400, 'Failed to Get items');
+            }
+
         }
 
     }
@@ -37,50 +76,38 @@ class ItemsController extends Controller
 
         $data = $request->all();
         $item = new Items();
+
+        $image = $request->file('image');
+        $path = storeImage($image);
+        if (!$path) {
+            return error(400, "Couldn't upload image");
+        }
+
         $item->fill($data);
+        $item->image = $path;
         $date = Carbon::now()->format('Y-m-d');
         $item->date = $date;
+
         if ($item->save()) {
             $id = $item->id;
-            $images = $request->file('images');
-            if ($images) {
-                foreach ($images as $image) {
-                $path = storeImage($images);
-                if (!$path) {
-                    self::destroy($id);
-                    return error(400, "Couldn't upload image");
-                }
 
-                ItemImages::create([
-                    'image' => $path,
-                    'item_id' => $id,
-                ]);
+            $exchangeCats = $request->exchangeCats;
 
-                }
+            if ($exchangeCats) {
 
-                $exchangeCats = $request->exchangeCats;
-                
-                if ($exchangeCats) {
+            // foreach ($exchangeCats as $cat) {
+            ItemExchangeCatgories::create([
+                'item_id' => $id,
+                'category_id' => $exchangeCats,
+            ]);
+            // }
 
-                    foreach ($exchangeCats as $cat) {
-
-                    ItemExchangeCatgories::create([
-                        'item_id' => $id,
-                        'category_id' => $exchangeCats,
-                    ]);
-                 }
-
-                    return self::show($id);
-
-                } else {
-                    self::destroy($id);
-                    return error(400, "Failed To Store Exchange Categories");
-
-                }
+            return self::show($id);
 
             } else {
                 self::destroy($id);
-                return error(400, "Failed To Store Images");
+                return error(400, " Exchange Categories are required");
+
             }
 
         } else {
@@ -88,7 +115,6 @@ class ItemsController extends Controller
         }
 
     }
-
 
     /**
      * Display the specified resource.
@@ -99,7 +125,7 @@ class ItemsController extends Controller
 
     public function show($id)
     {
-        $item = Items::where('id', $id)->with('itemWishList', 'users', 'images', 'categoryExchange', 'category', 'offers')->first();
+        $item = Items::where('id', $id)->with('itemWishList', 'users', 'categoryExchange', 'category', 'offers')->first();
         if ($item) {
             return success($item);
         } else {
@@ -108,8 +134,6 @@ class ItemsController extends Controller
 
     }
 
-
-
     /**
      * Update the specified resource in storage.
      *
@@ -117,9 +141,38 @@ class ItemsController extends Controller
      * @param  \App\Models\Items  $items
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Items $items)
+    public function update(Request $request, $id)
     {
-        //
+        $data = $request->all();
+        $oldData = Items::findOrFail($id);
+        $item = $oldData;
+        $image = $request->file('images');
+        $path = updateImage($image, $old_path);
+        if (!$path) {
+            return error(400, "Couldn't upload image");
+        }
+        $item->update($data);
+        $item->image = $path;
+        $item->date = $oldData->date;
+
+        if ($item->save()) {
+            $id = $item->id;
+            $exchangeCats = $request->exchangeCats;
+
+            if ($exchangeCats) {
+
+                $item->categoryExchange()->sync($exchangeCats);
+
+            } else {
+                self::destroy($id);
+                return error(400, " Exchange Categories are required");
+
+            }
+
+        } else {
+            return error(400, "Fail To Store Item");
+        }
+
     }
 
     /**
@@ -131,7 +184,6 @@ class ItemsController extends Controller
     public function destroy($id)
     {
         $item = Items::where('id', $id)->delete();
-        dd($item);
         $image = $item->image;
         destroyImage($image);
         if ($item) {

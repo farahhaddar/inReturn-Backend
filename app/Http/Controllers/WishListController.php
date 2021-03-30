@@ -1,9 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\WishList;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 
 class WishListController extends Controller
 {
@@ -12,19 +13,14 @@ class WishListController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($id)
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $wishList = WishList::where('user_id',$id)->get();
+        if ($wishList) {
+            return success($wishList);
+        } else {
+            return error(400, 'Can not get item');
+        }
     }
 
     /**
@@ -35,7 +31,16 @@ class WishListController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        $data = $request->all();
+        $wishList = new WishList();
+        $wishList->fill($data);
+        if ($wishList->save()) {
+            return success($wishList);
+        } else {
+            return error(400, 'Can not add item');
+        }
+
     }
 
     /**
@@ -45,17 +50,6 @@ class WishListController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show(WishList $wishList)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\WishList  $wishList
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(WishList $wishList)
     {
         //
     }
@@ -78,8 +72,14 @@ class WishListController extends Controller
      * @param  \App\Models\WishList  $wishList
      * @return \Illuminate\Http\Response
      */
-    public function destroy(WishList $wishList)
+    public function destroy($id)
     {
-        //
+        $wishList = WishList::where('id', $id)->delete();
+        if ($wishList) {
+            return success("Item has been removed  successfuly");
+        } else {
+            return error(400, 'Can not remove item from wishList');
+        }
+
     }
 }

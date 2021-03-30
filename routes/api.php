@@ -40,6 +40,17 @@ Route::get('/cities', 'CitiesController@index');
 
 
 //******************************************//
+//              offer items  ROUTES         //
+//******************************************//
+Route::post('/offerItems', 'OfferItemsController@store');
+
+//******************************************//
+//              offer    ROUTES             //
+//******************************************//
+Route::post('/offer','OfferController@store');
+
+
+//******************************************//
 //              Item   ROUTES               //
 //******************************************//
 Route::get('/items', 'ItemsController@index');
@@ -54,8 +65,12 @@ Route::delete('item/{id}', 'ItemsController@destroy');
 
 Route::get('/categories', 'CategoriesController@index');
 
-
-
+//******************************************//
+//              Item   ROUTES               //
+//******************************************//
+Route::get('/wishLists/{id}','WishListController@index');
+Route::post('/wishList', 'WishListController@store');
+Route::delete('wishList/{id}', 'WishListController@destroy');
 
 
 

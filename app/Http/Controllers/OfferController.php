@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\OfferItems;
 use App\Models\Offer;
 use Illuminate\Http\Request;
 
@@ -35,7 +35,29 @@ class OfferController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
+        $data = $request->all();
+        $item = new Offer();
+        $item->item_id = $data["item_id"];
+        $item->sender_id = $data["sender_id"];
+        $item->reciver_id = $data["reciver_id"];
+        $item->status = 0;
+        if ($item->save()) {
+           $id=$item->id;
+            $offerItems = json_encode($request->offerItems);
+            if($offerItems)
+            foreach ($offerItems as $offer) {
+            OfferItems::create([
+                'item_id' => $id,
+                'exchange_id' =>$offer,
+            ]);
+          }
+
+            return success($item);
+        } else {
+            return error(400, "Fail To Store Items");
+        }
+
     }
 
     /**

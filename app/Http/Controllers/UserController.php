@@ -64,7 +64,10 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        $user = User::where('id', $id)->first();
+        $user = User::where('id',$id)
+        ->with("city", "items", "userWishList")->first();
+
+        
         if ($user) {
             return success($user);
         } else {

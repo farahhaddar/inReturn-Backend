@@ -35,7 +35,18 @@ class OfferItemsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->all();
+        $item = new OfferItems();
+        
+        $item->item_id=$data["item_id"];
+        $item->exchange_id=$data["exchange_id"];
+       
+        if ($item->save()) {
+            return success($item);
+        } else {
+            return error(400, "Fail To Store Items");
+        }
+
     }
 
     /**

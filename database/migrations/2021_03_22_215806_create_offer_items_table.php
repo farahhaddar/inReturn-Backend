@@ -16,13 +16,10 @@ class CreateOfferItemsTable extends Migration
         Schema::create('offer_items', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('item_id')->unsigned();
-            $table->bigInteger('item_trade_with_id')->unsigned();
-            $table->foreign('item_trade_with_id')->references('id')->on('offers')->onDelete('cascade');
+            $table->bigInteger('exchange_id')->unsigned();
+            $table->foreign('exchange_id')->references('id')->on('offers')->onDelete('cascade');
             $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade');
-            $table->unique(['item_id','item_trade_with_id']);
-
-
-
+            $table->unique(['item_id','exchange_id']);
 
         });
     }

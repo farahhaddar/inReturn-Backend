@@ -13,7 +13,7 @@ class OfferItems extends Model
 
       protected $fillable = [
         'item_id',
-        'item_trade_with_id',
+        'exchange_id',
 
     ];
 }

@@ -16,8 +16,12 @@ class CreateOffersTable extends Migration
         Schema::create('offers', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('item_id')->unsigned();
+            $table->bigInteger('sender_id')->unsigned();
+            $table->bigInteger('reciver_id')->unsigned();
             $table->integer('status');
             $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade');
+            $table->foreign('sender_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('reciver_id')->references('id')->on('users')->onDelete('cascade');
 
         });
     }

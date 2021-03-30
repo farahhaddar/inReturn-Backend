@@ -19,6 +19,7 @@ class Items extends Model
         'name',
         'details',
         'date',
+        'image',
         'user_id',
         'category_id',
 
@@ -47,13 +48,10 @@ class Items extends Model
 
     public function offers()
     {
-      return   $this->belongsToMany(Offer::class,'offer_items','item_id','item_trade_with_id');
+      return   $this->belongsToMany(Offer::class,'offer_items','item_id','exchange_id');
 
     }
 
-    public function images()
-    {
-        return $this->hasMany(ItemImages::class, 'item_id', 'id');
-    }
+
 
 }
